@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Tagging Demo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .event-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .event-log p {
+            margin: 5px 0;
+            padding: 3px;
+            border-bottom: 1px solid #eee;
+        }
+        .event-log p:last-child {
+            border-bottom: none;
+        }
+        .event-tag-added {
+            background-color: rgba(0, 255, 0, 0.05);
+        }
+        .event-tag-removed {
+            background-color: rgba(255, 0, 0, 0.05);
+        }
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .demo-section h2 {
+            margin-top: 0;
+            color: #444;
+            font-size: 1.2em;
+        }
+        code {
+            font-family: monospace;
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #333;
+        }
+        .code-block {
+            display: block;
+            background-color: #f5f5f5;
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Tagging Library Demo</h1>
+
+    <div class="demo-section">
+        <h2>Default Initialization (Using Class Selector)</h2>
+        <p>These items are automatically initialized by the default class <code>taggable-item</code>:</p>
+        
+        <div class="taggable-item" id="default1">
+            <p>Default taggable item 1</p>
+            <div class="item-tags"></div>
+        </div>
+
+        <div class="taggable-item" id="default2">
+            <p>Default taggable item 2</p>
+            <div class="item-tags"></div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Custom Selector Initialization</h2>
+        <p>These items are initialized using a custom selector <code>#custom-selector .my-item</code>:</p>
+        
+        <div id="custom-selector">
+            <div class="my-item" id="custom1">
+                <p>Custom selector item 1 (without pre-existing tag container)</p>
+                <!-- The tag container will be created automatically -->
+            </div>
+
+            <div class="my-item" id="custom2">
+                <p>Custom selector item 2 (with pre-existing tag container)</p>
+                <div class="item-tags"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>ID-Based Initialization</h2>
+        <p>This item is initialized using a specific ID selector <code>#specific-item</code>:</p>
+        
+        <div id="specific-item">
+            <p>This is a uniquely targeted item</p>
+            <!-- No tag container to show automatic creation -->
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Initial Tags via Data Attributes</h2>
+        <p>These items have pre-defined tags specified using the <code>data-initial-tags</code> attribute:</p>
+        
+        <!-- Item with initial tags specified by color name -->
+        <div class="taggable-item" id="initial-by-name" data-initial-tags="Red, Blue, Green">
+            <p>Item with initial tags by color name: <code>data-initial-tags="Red, Blue, Green"</code></p>
+            <div class="item-tags"></div>
+        </div>
+
+        <!-- Item with initial tags specified by color value -->
+        <div class="taggable-item" id="initial-by-value" data-initial-tags="#ec8383, #84cdef">
+            <p>Item with initial tags by color value: <code>data-initial-tags="#ec8383, #84cdef"</code></p>
+            <div class="item-tags"></div>
+        </div>
+        
+        <!-- Item with initial tags specified by both name and value -->
+        <div class="taggable-item" id="initial-mixed" data-initial-tags="Yellow, #ca99de">
+            <p>Item with initial tags by mixed methods: <code>data-initial-tags="Yellow, #ca99de"</code></p>
+            <div class="item-tags"></div>
+        </div>
+        
+        <!-- Item initialized with a custom selector but also having initial tags -->
+        <div id="initial-custom-selector">
+            <div class="custom-with-initial" id="custom-initial" data-initial-tags="Orange, Gray">
+                <p>Item with custom selector AND initial tags: <code>data-initial-tags="Orange, Gray"</code></p>
+                <!-- No container - will be created automatically -->
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Usage Documentation</h2>
+        
+        <h3>HTML Markup</h3>
+        <p>Add the <code>data-initial-tags</code> attribute with a comma-separated list of values:</p>
+        <pre class="code-block">&lt;div class="taggable-item" data-initial-tags="Red, Blue, Green"&gt;
+    &lt;p&gt;Content here&lt;/p&gt;
+    &lt;div class="item-tags"&gt;&lt;/div&gt;
+&lt;/div&gt;</pre>
+
+        <p>You can use either color names or hex values:</p>
+        <pre class="code-block">&lt;div class="taggable-item" data-initial-tags="#ec8383, #84cdef, Green"&gt;
+    &lt;p&gt;Mix of hex values and names&lt;/p&gt;
+    &lt;div class="item-tags"&gt;&lt;/div&gt;
+&lt;/div&gt;</pre>
+    </div>
+
+    <h2>Event Log</h2>
+    <div id="event-log" class="event-log">
+        <p>Events will appear here when you add or remove tags.</p>
+    </div>
+
+    <script src="js/colortag.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create one instance of ColorTag for all tagging operations
+            const colorTag = new ColorTag({
+                // Example: Customize colors (optional)
+                // colors: [
+                //    { name: 'Ruby', color: '#FF0000' },
+                //    { name: 'Emerald', color: '#00FF00' },
+                //    { name: 'Sapphire', color: '#0000FF' },
+                //    { name: 'Gold', color: '#FFFF00' }
+                // ]
+            });
+            
+            // Initialize default items (with class 'taggable-item')
+            const defaultInitCount = colorTag.init();
+            console.log(`Initialized ${defaultInitCount} default items`);
+            
+            // Initialize items with custom selector
+            const customInitCount = colorTag.init('#custom-selector .my-item');
+            console.log(`Initialized ${customInitCount} custom selector items`);
+            
+            // Initialize a specific item by ID
+            const specificInitCount = colorTag.init('#specific-item');
+            console.log(`Initialized ${specificInitCount} specific item`);
+            
+            // Initialize custom item with initial tags
+            const customInitialCount = colorTag.init('#initial-custom-selector .custom-with-initial');
+            console.log(`Initialized ${customInitialCount} custom items with initial tags`);
+            
+            // Get the event log element
+            const eventLog = document.getElementById('event-log');
+            
+            // Define handler for tag added events
+            const handleTagAdded = (data) => {
+                const message = `${new Date().toLocaleTimeString()} - TAG ADDED: "${data.colorName}" (${data.color}) to ${data.itemId}`;
+                const logEntry = document.createElement('p');
+                logEntry.textContent = message;
+                logEntry.classList.add('event-tag-added');
+                eventLog.appendChild(logEntry);
+                eventLog.scrollTop = eventLog.scrollHeight; // Auto-scroll to bottom
+                
+                // Example of custom action when tag is added
+                console.log('Tag added:', {
+                    itemId: data.itemId,
+                    colorName: data.colorName,
+                    colorValue: data.color,
+                    timestamp: data.timestamp
+                });
+                // You could save to a database, trigger other UI updates, etc.
+            };
+            
+            // Define handler for tag removed events
+            const handleTagRemoved = (data) => {
+                const message = `${new Date().toLocaleTimeString()} - TAG REMOVED: "${data.colorName}" (${data.color}) from ${data.itemId}`;
+                const logEntry = document.createElement('p');
+                logEntry.textContent = message;
+                logEntry.classList.add('event-tag-removed');
+                eventLog.appendChild(logEntry);
+                eventLog.scrollTop = eventLog.scrollHeight; // Auto-scroll to bottom
+                
+                // Example of custom action when tag is removed
+                console.log('Tag removed:', {
+                    itemId: data.itemId,
+                    colorName: data.colorName,
+                    colorValue: data.color,
+                    timestamp: data.timestamp
+                });
+                // You could update a database, trigger other UI changes, etc.
+            };
+            
+            // Subscribe to tag events
+            colorTag.on('tagAdded', handleTagAdded);
+            colorTag.on('tagRemoved', handleTagRemoved);
+        });
+    </script>
+</body>
+</html> 

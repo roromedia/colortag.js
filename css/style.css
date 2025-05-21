@@ -1,0 +1,181 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+h1, h2 {
+    color: #555;
+}
+
+.taggable-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative; /* Important for positioning palette and button */
+}
+
+.item-tags {
+    display: flex;
+    gap: 6px; /* Spacing between tags on an item */
+    margin-top: 10px;
+    flex-wrap: wrap;
+    min-height: 22px; 
+    padding-bottom: 5px; /* Space for tags before item content if any */
+}
+
+.color-tag-option {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s ease-out, border-color 0.1s ease, box-shadow 0.1s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: inline-block; /* Allow them to sit in the item-color-palette */
+}
+
+.color-tag-option:hover {
+    transform: scale(1.15);
+    border-color: #aaa;
+}
+
+/* Style for tags applied to items */
+.applied-tag {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex; /* To center the X mark */
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    position: relative; /* For positioning the X mark */
+    cursor: default; /* Default cursor, X will have its own */
+    transition: transform 0.1s ease-out;
+}
+
+.applied-tag:active {
+    transform: scale(0.9); /* Feedback for touch removal */
+}
+
+.remove-tag-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0.8;
+    transition: opacity 0.1s ease, background-color 0.1s ease;
+}
+
+.x-icon {
+    display: block;
+}
+
+.remove-tag-mark:hover {
+    opacity: 1;
+    background-color: rgba(0,0,0,0.7);
+}
+
+/* Item-specific add tag button */
+.item-add-tag-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #555;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s, color 0.2s;
+    padding: 0;
+}
+
+.plus-icon {
+    display: block;
+}
+
+.item-add-tag-button:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.item-add-tag-button:active,
+.item-add-tag-button.palette-active {
+    background-color: #007AFF;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0,122,255,0.4);
+    transform: scale(0.95);
+}
+
+/* Item-specific color palette */
+.item-color-palette {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 45px; /* Below the add button */
+    right: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    z-index: 100; /* Ensure it's on top */
+    gap: 8px;
+    
+}
+
+.item-color-palette.active {
+    display: flex; /* Show when active */
+}
+
+/* Touch-friendly enhancements (some already integrated above) */
+@media (hover: none) {
+    .color-tag-option {
+        width: 32px;
+        height: 32px;
+    }
+    .applied-tag {
+        width: 20px;
+        height: 20px;
+    }
+    /* The X mark for removal on hover is not applicable on touch-only, as touch directly removes */
+    .remove-tag-mark {
+        /* On touch devices, direct tap removes the tag, so X is primarily for mouse */
+        width: 16px;
+        height: 16px;
+    }
+    .x-icon {
+        width: 12px;
+        height: 12px;
+    }
+    .item-add-tag-button {
+        width: 34px;
+        height: 34px;
+    }
+    .plus-icon {
+        width: 20px;
+        height: 20px;
+    }
+    .item-color-palette {
+        padding: 10px;
+        gap: 10px;
+    }
+} 
