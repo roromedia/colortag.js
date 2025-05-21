@@ -1,8 +1,6 @@
-# ColorTag
+# colortag.js
 
-ColorTag is a lightweight JavaScript library for adding color-coded tagging functionality to HTML elements. It provides an intuitive, touch-friendly interface for applying and removing color tags, inspired by macOS Finder's tagging system.
-
-![ColorTag Library Preview](https://via.placeholder.com/800x400?text=ColorTag+Library+Preview)
+colortag.js is a lightweight JavaScript library for adding color-coded tagging functionality to HTML elements. It provides an intuitive, touch-friendly interface for applying and removing color tags, inspired by macOS Finder's tagging system.
 
 ## Features
 
@@ -206,7 +204,7 @@ The event callbacks receive a data object with the following properties:
 ## Project Structure
 
 ```
-colortag/
+colortag.js/
 ├── css/
 │   └── style.css         # Styles for the color tags and UI
 ├── js/
@@ -214,7 +212,6 @@ colortag/
 ├── index.html            # Example/demo page
 ├── README.md             # This documentation
 ├── LICENSE               # MIT license
-├── package.json          # npm package configuration
 ├── .gitignore            # Git ignore file
 └── CONTRIBUTING.md       # Contribution guidelines
 ```
