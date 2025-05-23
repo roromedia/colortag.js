@@ -210,11 +210,17 @@ class ColorTag {
         const addTagButton = document.createElement('button');
         addTagButton.classList.add('item-add-tag-button');
         
+        // Add accessibility attributes
+        addTagButton.setAttribute('aria-label', 'Add color tag');
+        addTagButton.setAttribute('aria-expanded', 'false');
+        addTagButton.setAttribute('aria-haspopup', 'true');
+        
         // Create SVG for plus icon
         const plusSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         plusSvg.setAttribute('viewBox', '0 0 24 24');
         plusSvg.setAttribute('width', '16');
         plusSvg.setAttribute('height', '16');
+        plusSvg.setAttribute('aria-hidden', 'true'); // Hide from screen readers since button has label
         plusSvg.classList.add('plus-icon');
         
         const plusCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -258,8 +264,31 @@ class ColorTag {
             this.toggleItemPalette(itemElement, itemPalette);
         };
 
+        // Add click and touch events
         addTagButton.addEventListener('click', eventHandler);
         addTagButton.addEventListener('touchstart', eventHandler, { passive: false });
+        
+        // Add keyboard event for Enter and Space keys
+        addTagButton.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleItemPalette(itemElement, itemPalette);
+            }
+        });
+
+        // Add global escape key handler to close palette
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape' && this.activePalette && this.activePalette.paletteEl === itemPalette) {
+                e.preventDefault();
+                this.toggleItemPalette(itemElement, itemPalette, false);
+                addTagButton.focus(); // Return focus to the button
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        // Store the escape handler for potential cleanup
+        itemElement._escapeHandler = escapeHandler;
 
         const existingTags = itemElement.querySelectorAll(`.${this.itemTagsClass} > .applied-tag`);
         existingTags.forEach(tagDiv => {
@@ -270,24 +299,60 @@ class ColorTag {
     createItemPalette(itemElement) {
         const palette = document.createElement('div');
         palette.classList.add('item-color-palette');
+        palette.setAttribute('role', 'menu');
+        palette.setAttribute('aria-label', 'Color tag options');
 
-        this.colors.forEach(colorObj => {
+        this.colors.forEach((colorObj, index) => {
             const colorDiv = document.createElement('div');
             colorDiv.classList.add('color-tag-option');
             colorDiv.style.backgroundColor = colorObj.color;
             colorDiv.dataset.color = colorObj.color;
             colorDiv.dataset.colorName = colorObj.name;
             colorDiv.title = `Tag with ${colorObj.name}`;
+            
+            // Make keyboard accessible
+            colorDiv.setAttribute('tabindex', '0');
+            colorDiv.setAttribute('role', 'menuitem');
+            colorDiv.setAttribute('aria-label', `Tag with ${colorObj.name} color`);
 
             const eventHandler = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 this.addTagToItem(itemElement, colorObj);
                 this.toggleItemPalette(itemElement, palette, false); // Hide palette after selection
+                
+                // Return focus to the add button
+                const addButton = itemElement.querySelector('.item-add-tag-button');
+                if (addButton) {
+                    addButton.focus();
+                }
             };
 
+            // Mouse and touch events
             colorDiv.addEventListener('click', eventHandler);
             colorDiv.addEventListener('touchstart', eventHandler, { passive: false });
+            
+            // Keyboard events
+            colorDiv.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    eventHandler(e);
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = (index + 1) % this.colors.length;
+                    const nextOption = palette.children[nextIndex];
+                    if (nextOption) {
+                        nextOption.focus();
+                    }
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = (index - 1 + this.colors.length) % this.colors.length;
+                    const prevOption = palette.children[prevIndex];
+                    if (prevOption) {
+                        prevOption.focus();
+                    }
+                }
+            });
+            
             palette.appendChild(colorDiv);
         });
         return palette;
@@ -307,6 +372,7 @@ class ColorTag {
                 }
                 if (this.activePalette.triggerEl) {
                     this.activePalette.triggerEl.classList.remove('palette-active');
+                    this.activePalette.triggerEl.setAttribute('aria-expanded', 'false');
                 }
                 // Important: this.activePalette will be updated below, so we don't nullify it here yet
                 // unless we explicitly only want one open ever, which is the case.
@@ -316,16 +382,24 @@ class ColorTag {
             paletteToToggle.classList.add('active');
             if (buttonToToggle) {
                 buttonToToggle.classList.add('palette-active');
+                buttonToToggle.setAttribute('aria-expanded', 'true');
             }
             this.activePalette = { 
                 paletteEl: paletteToToggle, 
                 triggerEl: buttonToToggle, 
                 itemEl: itemElement 
             };
+            
+            // Focus the first color option when palette opens
+            const firstColorOption = paletteToToggle.querySelector('.color-tag-option');
+            if (firstColorOption) {
+                firstColorOption.focus();
+            }
         } else { // If we are trying to make this palette inactive (shouldBeActive is false)
             paletteToToggle.classList.remove('active');
             if (buttonToToggle) {
                 buttonToToggle.classList.remove('palette-active');
+                buttonToToggle.setAttribute('aria-expanded', 'false');
             }
             // If this was the active palette, clear the record
             if (this.activePalette && this.activePalette.paletteEl === paletteToToggle) {
@@ -383,12 +457,26 @@ class ColorTag {
     }
 
     addTagRemovalListeners(tagDiv) {
+        // Add accessibility attributes
+        tagDiv.setAttribute('role', 'button');
+        tagDiv.setAttribute('tabindex', '0');
+        tagDiv.setAttribute('aria-label', `Remove ${tagDiv.dataset.colorName || 'color'} tag`);
+        
         // Touch to remove
         tagDiv.addEventListener('touchstart', (e) => {
             e.preventDefault(); // Important to prevent other actions
             e.stopPropagation();
             this.removeTag(tagDiv);
         }, { passive: false });
+        
+        // Keyboard to remove (Enter or Space or Delete)
+        tagDiv.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Delete' || e.key === 'Backspace') {
+                e.preventDefault();
+                e.stopPropagation();
+                this.removeTag(tagDiv);
+            }
+        });
 
         // Mouse hover to show 'X'
         let removeMark = null;
@@ -403,6 +491,7 @@ class ColorTag {
             xSvg.setAttribute('viewBox', '0 0 24 24');
             xSvg.setAttribute('width', '10');
             xSvg.setAttribute('height', '10');
+            xSvg.setAttribute('aria-hidden', 'true'); // Hide from screen readers
             xSvg.classList.add('x-icon');
             
             const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
