@@ -6,6 +6,7 @@ colortag.js is a lightweight JavaScript library for adding color-coded tagging f
 
 - 🎨 Color-coded tags with customizable palette
 - 📱 Touch-friendly interface with desktop hover effects
+- ⌨️ Full keyboard navigation support for accessibility
 - 🔄 Simple API with event hooks for integration
 - 🏷️ Support for initial tags via data attributes
 - 🎯 Flexible element targeting with CSS selectors
@@ -385,6 +386,50 @@ ColorTag is compatible with modern browsers:
   - Tap the "+" button to show color palette
   - Tap a color to add a tag
   - Tap directly on a tag to remove it
+
+## Keyboard Navigation & Accessibility
+
+ColorTag provides full keyboard navigation support for accessibility:
+
+### Add Tag Button
+- **Tab** to navigate to the "+" (add tag) button
+- **Enter** or **Space** to open the color palette
+- **Escape** to close an open palette and return focus to the button
+
+### Color Palette Navigation
+- When a palette opens, focus automatically moves to the first color option
+- **Arrow Keys** to navigate between color options:
+  - **→** (Right) or **↓** (Down): Move to next color
+  - **←** (Left) or **↑** (Up): Move to previous color
+- **Enter** or **Space** to select a color and add the tag
+- **Escape** to close the palette and return focus to the add button
+- Navigation wraps around (last color → first color, and vice versa)
+
+### Applied Tags
+- **Tab** to navigate to existing applied tags
+- **Enter**, **Space**, **Delete**, or **Backspace** to remove a tag
+- Each tag announces its color name to screen readers
+
+### Screen Reader Support
+- All buttons and interactive elements have proper ARIA labels
+- Color information is available to assistive technologies
+- Proper roles and states are announced (expanded/collapsed palettes)
+- Focus management ensures users always know where they are
+
+### Visual Focus Indicators
+- Clear blue outline (2px solid #007AFF) on all focused elements
+- Consistent focus styling across all interactive components
+- Focus indicators are visible and meet accessibility contrast requirements
+
+### Example Keyboard Workflow
+1. **Tab** to reach an add tag button
+2. **Enter** to open the color palette
+3. **Arrow keys** to select desired color
+4. **Enter** to apply the color tag
+5. **Tab** to navigate to applied tags
+6. **Delete** to remove unwanted tags
+
+This keyboard support ensures the library is fully accessible to users who rely on keyboard navigation or assistive technologies.
 
 ## Customization
 
