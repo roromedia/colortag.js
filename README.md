@@ -75,6 +75,19 @@ const colorTag = new ColorTag({
 });
 ```
 
+You can also pass objects that only define a `color` property. In that case the
+library will generate a name automatically:
+
+```javascript
+const colorTag = new ColorTag({
+    colors: [
+        { color: '#FF0000' },
+        { color: '#00FF00' },
+        { color: '#0000FF' }
+    ]
+});
+```
+
 #### 2. In the init() method
 
 You can pass colors directly to the `init()` method as a second parameter:

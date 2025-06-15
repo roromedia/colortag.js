@@ -32,20 +32,37 @@ class ColorTag {
     // Process and normalize colors - ensure each has name and color properties
     _processColors(colors) {
         return colors.map(color => {
-            // If the color is already in object format with name and color
-            if (typeof color === 'object' && color.name && color.color) {
-                return color;
+            if (typeof color === 'object') {
+                // Already has both properties
+                if (color.name && color.color) {
+                    return color;
+                }
+                // Object with only a color value
+                if (color.color) {
+                    return {
+                        name: this._generateColorName(color.color),
+                        color: color.color
+                    };
+                }
+                // If the object doesn't contain a usable value, skip it
+                return null;
             }
-            // If it's just a color string, generate a name
-            return { 
-                name: this._generateColorName(color), 
-                color: color 
+            // It's a simple color string
+            return {
+                name: this._generateColorName(color),
+                color: color
             };
-        });
+        }).filter(Boolean);
     }
 
     // Generate a simple name for a color if none provided
     _generateColorName(colorValue) {
+        // Ensure we are working with a string
+        if (typeof colorValue === 'object' && colorValue !== null && colorValue.color) {
+            colorValue = colorValue.color;
+        }
+        colorValue = String(colorValue);
+
         // Try to match with common color names
         const commonColors = {
             '#ff0000': 'Red',
